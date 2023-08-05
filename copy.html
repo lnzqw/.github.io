@@ -43,12 +43,6 @@ const btn = document.getElementById('btn');
 
 function handleClick(image) {
 
-  
-  
-  // iOS Safari 需要触发 touch 事件
-  const touch = new TouchEvent('touchstart');
-  document.dispatchEvent(touch);
-
   // 剪贴板写入
   navigator.clipboard.writeText(text.innerText);
   
