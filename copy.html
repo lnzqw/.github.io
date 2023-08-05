@@ -53,7 +53,7 @@ function handleClick(image) {
   navigator.clipboard.writeText(text.innerText);
   
   try {
-    const imgFile = await image.getAsFile();
+    const imgFile =  image.getAsFile();
 
     const reader = new FileReader();
     reader.readAsArrayBuffer(imgFile);
