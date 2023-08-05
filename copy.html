@@ -61,7 +61,7 @@ function handleClick(image) {
     reader.onload = () => {
       // Safari 需要先调用 read
       if(navigator.userAgent.indexOf('Safari') != -1) {  
-        await navigator.clipboard.read();
+         navigator.clipboard.read();
       } 
       
       const buffer = reader.result;
