@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">  
-<title>Demo</title>
+<meta charset="utf-8">
+<title>Demo</title> 
 </head>
 
 <body>
 
-<p id="text">这是一段文字内容</p> 
+<p id="text">这是一段文字内容</p>
 
-
-<img id="image" src="https://lnzqw.github.io/m2_gpu.jpg">
+<img id="image" src="https://lnzqw.github.io/m2_gpu.jpg">  
 
 <button id="btn">点击复制文字和图片</button>
 
 <script>
 
-// 处理 CORS 错误
+// 处理 CORS 错误  
 function handleCorsError(res) {
   if (!res.ok) {
-    throw new Error(`CORS error: ${res.status}`); 
+    throw new Error(`CORS error: ${res.status}`);
   }
   return res;
 }
 
 // 为 img 元素添加 getAsFile 方法
 HTMLImageElement.prototype.getAsFile = async function() {
-
-  
   const response = await fetch(this.src);
   const blob = await handleCorsError(response).blob();
 
@@ -37,19 +34,27 @@ HTMLImageElement.prototype.getAsFile = async function() {
     type: blob.type
   });
 
-  return file; 
+  return file;
 };
 
 const text = document.getElementById('text');
 const image = document.getElementById('image');
 const btn = document.getElementById('btn');
 
-btn.addEventListener('click', async () => {
+function handleClick() {
 
-  // 复制文本
+  // Safari 需要先调用 read
+  if(navigator.userAgent.indexOf('Safari') != -1) {  
+    await navigator.clipboard.read();
+  }  
+  
+  // iOS Safari 需要触发 touch 事件
+  const touch = new TouchEvent('touchstart');
+  document.dispatchEvent(touch);
+
+  // 剪贴板写入
   navigator.clipboard.writeText(text.innerText);
-
-  // 获取图片文件 
+  
   try {
     const imgFile = await image.getAsFile();
 
@@ -57,24 +62,23 @@ btn.addEventListener('click', async () => {
     reader.readAsArrayBuffer(imgFile);
 
     reader.onload = () => {
-      // 处理 ArrayBuffer
       const buffer = reader.result;
-      const dataView = new DataView(buffer);  
-      const item = new ClipboardItem({
-        'image/png': dataView
-      });
 
-      navigator.clipboard.write([item]);
-
+      const dataView = new DataView(buffer);
+      const item = new ClipboardItem({'image/png': dataView});
+      
+      navigator.clipboard.write([item]); 
     };
 
-  } catch (err) {
-    console.log(err); 
+  } catch(err) {
+    console.log(err);
   }
 
-});
+}
+
+btn.addEventListener('click', handleClick);
 
 </script>
 
-</body>
+</body>  
 </html>
