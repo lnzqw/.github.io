@@ -28,10 +28,8 @@ HTMLImageElement.prototype.getAsFile = async function() {
   const response = await fetch(this.src);
   const blob = await handleCorsError(response).blob();
 
-  const filename = this.src.split('/').pop();
-
-  const file = new File([blob], filename, {
-    type: blob.type
+  // 返回 Blob 对象
+  return new Blob([blob], {type: 'image/png'}); 
   });
 
   return file;
