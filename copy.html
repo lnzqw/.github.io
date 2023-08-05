@@ -43,10 +43,7 @@ const btn = document.getElementById('btn');
 
 function handleClick() {
 
-  // Safari 需要先调用 read
-  if(navigator.userAgent.indexOf('Safari') != -1) {  
-    await navigator.clipboard.read();
-  }  
+  
   
   // iOS Safari 需要触发 touch 事件
   const touch = new TouchEvent('touchstart');
@@ -62,6 +59,11 @@ function handleClick() {
     reader.readAsArrayBuffer(imgFile);
 
     reader.onload = () => {
+      // Safari 需要先调用 read
+      if(navigator.userAgent.indexOf('Safari') != -1) {  
+        await navigator.clipboard.read();
+      } 
+      
       const buffer = reader.result;
 
       const dataView = new DataView(buffer);
