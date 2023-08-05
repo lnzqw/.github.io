@@ -30,9 +30,7 @@ HTMLImageElement.prototype.getAsFile = async function() {
 
   // 返回 Blob 对象
   return new Blob([blob], {type: 'image/png'}); 
-  });
-
-  return file;
+  
 };
 
 const text = document.getElementById('text');
