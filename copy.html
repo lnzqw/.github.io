@@ -43,10 +43,12 @@ const btn = document.getElementById('btn');
 
 function handleClick(image) {
 
-  // 剪贴板写入
-  navigator.clipboard.writeText(text.innerText);
+  
   
   try {
+    // 剪贴板写入文字
+    navigator.clipboard.writeText(text.innerText);
+    
     const imgFile =  image.getAsFile();
 
     const reader = new FileReader();
