@@ -26,10 +26,9 @@ function handleCorsError(res) {
 // 为 img 元素添加 getAsFile 方法
 HTMLImageElement.prototype.getAsFile = async function() {
   const response = await fetch(this.src);
-  const blob = await handleCorsError(response).blob();
-
-  // 返回 Blob 对象
-  return new Blob([blob], {type: 'image/png'}); 
+  const blob = await response.blob(); 
+  
+  return new Blob([blob], {type: 'image/png'});
   
 };
 
@@ -47,8 +46,15 @@ function handleClick() {
     
     const imgFile =  image.getAsFile();
 
+    console.log(imgFile instanceof Blob); // true
+
+    if (!(imgFile instanceof Blob)) {
+      throw new Error('Not a Blob!');
+    }
+
     const reader = new FileReader();
     reader.readAsArrayBuffer(imgFile);
+
 
     reader.onload = () => {
       // Safari 需要先调用 read
