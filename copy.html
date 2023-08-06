@@ -15,82 +15,47 @@
 
 <script>
 
-// 处理 CORS 错误  
-function handleCorsError(res) {
-  if (!res.ok) {
-    throw new Error(`CORS error: ${res.status}`);
-  }
-  return res;
+const image = document.querySelector("#image");
+const btn = document.querySelector("#btn");
+
+function handleCopyImg() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+
+  canvas.width = image.width;
+  canvas.height = image.height;
+  img.crossOrigin = "Anonymous";
+  img.src = image.src;
+  
+  img.onload = () => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(img, 0, 0);
+    // 将canvas转为blob
+    canvas.toBlob(async blob => {
+      console.log(blob);
+      const data = [
+        new ClipboardItem({
+          [blob.type]: blob,
+        }),
+      ];
+      // https://w3c.github.io/clipboard-apis/#dom-clipboard-write
+	  
+      await navigator.clipboard.write(data)
+        .then(
+          () => {
+            console.log("Copied to clipboard successfully!");
+          },
+          () => {
+            console.error("Unable to write to clipboard.");
+          }
+        );
+      });
+  }
 }
 
-// 为 img 元素添加 getAsFile 方法
-HTMLImageElement.prototype.getAsFile = async function() {
-  return new Promise((resolve, reject) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = this.width;
-    canvas.height = this.height;
-    context.drawImage(this, 0, 0);
-    canvas.toBlob(
-      function(blob) {
-        resolve(blob);
-      },
-      'image/png', // 指定所需的 MIME 类型
-      1 // JPEG 图像的质量参数（0.0 - 1.0）
-    );
-  });
-};
+btn.addEventListener("click", handleCopyImg, false);
 
-const text = document.getElementById('text');
-const image = document.getElementById('image');
-const btn = document.getElementById('btn');
-
-function handleClick() {
-  try {
-    // 请求剪贴板写入权限
-    navigator.permissions.query({ name: 'clipboard-write' })
-      .then(result => {
-        if (result.state === 'granted' || result.state === 'prompt') {
-          // 剪贴板写入文字
-          navigator.clipboard.writeText(text.innerText)
-            .then(() => {
-              // 剪贴板写入图像
-              image.getAsFile()
-                .then(blob => {
-                  console.log(blob instanceof Blob); // true
-
-                  if (!(blob instanceof Blob)) {
-                    throw new Error('Not a Blob!');
-                  }
-
-                  const item = new ClipboardItem({'image/png': blob});
-
-                  navigator.clipboard.write([item])
-                    .then(() => {
-                      console.log('复制成功');
-                    })
-                    .catch(error => {
-                      console.log('复制失败:', error);
-                    });
-                })
-                .catch(error => {
-                  console.log('获取图像文件失败:', error);
-                });
-            })
-            .catch(error => {
-              console.log('复制文字失败:', error);
-            });
-        }
-      })
-      .catch(error => {
-        console.log('请求剪贴板权限失败:', error);
-      });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-btn.addEventListener('click', handleClick);
 
 </script>
 
