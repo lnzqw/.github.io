@@ -25,11 +25,20 @@ function handleCorsError(res) {
 
 // 为 img 元素添加 getAsFile 方法
 HTMLImageElement.prototype.getAsFile = async function() {
-  const response = await fetch(this.src);
-  const blob = await response.blob(); 
-  
-  return new Blob([blob], {type: 'image/png'});
-  
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = this.width;
+    canvas.height = this.height;
+    context.drawImage(this, 0, 0);
+    canvas.toBlob(
+      function(blob) {
+        resolve(blob);
+      },
+      'image/png', // 指定所需的 MIME 类型
+      1 // JPEG 图像的质量参数（0.0 - 1.0）
+    );
+  });
 };
 
 const text = document.getElementById('text');
@@ -37,46 +46,60 @@ const image = document.getElementById('image');
 const btn = document.getElementById('btn');
 
 function handleClick() {
-
-  
-  
   try {
-    // 剪贴板写入文字
-    //navigator.clipboard.writeText(text.innerText);
-    
-    const imgFile =  image.getAsFile();
+    // 请求剪贴板写入权限
+    navigator.permissions.query({ name: 'clipboard-write' })
+      .then(result => {
+        if (result.state === 'granted' || result.state === 'prompt') {
+          // 剪贴板写入文字
+          navigator.clipboard.writeText(text.innerText)
+            .then(() => {
+              // 剪贴板写入图像
+              const imgFile =  image.getAsFile();
 
-    console.log(imgFile instanceof Blob); // true
+              console.log(imgFile instanceof Blob); // true
 
-    if (!(imgFile instanceof Blob)) {
-      throw new Error('Not a Blob!');
-    }
+              if (!(imgFile instanceof Blob)) {
+                throw new Error('Not a Blob!');
+              }
 
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(imgFile);
+              const reader = new FileReader();
+              reader.readAsArrayBuffer(imgFile);
 
+              reader.onload = () => {
+                // Safari 需要先调用 read
+                if(navigator.userAgent.indexOf('Safari') != -1) {  
+                   navigator.clipboard.read();
+                } 
 
-    reader.onload = () => {
-      // Safari 需要先调用 read
-      if(navigator.userAgent.indexOf('Safari') != -1) {  
-         navigator.clipboard.read();
-      } 
-      
-      const buffer = reader.result;
+                const buffer = reader.result;
 
-      const dataView = new DataView(buffer);
-      const item = new ClipboardItem({'image/png': dataView});
-      
-      navigator.clipboard.write([item]); 
-    };
+                const dataView = new DataView(buffer);
+                const item = new ClipboardItem({'image/png': dataView});
 
+                navigator.clipboard.write([item])
+                  .then(() => {
+                    console.log('复制成功');
+                  })
+                  .catch(error => {
+                    console.log('复制失败:', error);
+                  });
+              };
+            })
+            .catch(error => {
+              console.log('复制文字失败:', error);
+            });
+        }
+      })
+      .catch(error => {
+        console.log('请求剪贴板权限失败:', error);
+      });
   } catch(err) {
     console.log(err);
   }
-
 }
 
-btn.addEventListener('click', handleClick());
+btn.addEventListener('click', handleClick);
 
 </script>
 
