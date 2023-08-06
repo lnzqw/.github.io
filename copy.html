@@ -55,36 +55,27 @@ function handleClick() {
           navigator.clipboard.writeText(text.innerText)
             .then(() => {
               // 剪贴板写入图像
-              const imgFile =  image.getAsFile();
+              image.getAsFile()
+                .then(blob => {
+                  console.log(blob instanceof Blob); // true
 
-              console.log(imgFile instanceof Blob); // true
+                  if (!(blob instanceof Blob)) {
+                    throw new Error('Not a Blob!');
+                  }
 
-              if (!(imgFile instanceof Blob)) {
-                throw new Error('Not a Blob!');
-              }
+                  const item = new ClipboardItem({'image/png': blob});
 
-              const reader = new FileReader();
-              reader.readAsArrayBuffer(imgFile);
-
-              reader.onload = () => {
-                // Safari 需要先调用 read
-                if(navigator.userAgent.indexOf('Safari') != -1) {  
-                   navigator.clipboard.read();
-                } 
-
-                const buffer = reader.result;
-
-                const dataView = new DataView(buffer);
-                const item = new ClipboardItem({'image/png': dataView});
-
-                navigator.clipboard.write([item])
-                  .then(() => {
-                    console.log('复制成功');
-                  })
-                  .catch(error => {
-                    console.log('复制失败:', error);
-                  });
-              };
+                  navigator.clipboard.write([item])
+                    .then(() => {
+                      console.log('复制成功');
+                    })
+                    .catch(error => {
+                      console.log('复制失败:', error);
+                    });
+                })
+                .catch(error => {
+                  console.log('获取图像文件失败:', error);
+                });
             })
             .catch(error => {
               console.log('复制文字失败:', error);
@@ -94,7 +85,7 @@ function handleClick() {
       .catch(error => {
         console.log('请求剪贴板权限失败:', error);
       });
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
