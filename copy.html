@@ -19,7 +19,8 @@ const image = document.querySelector("#image");
 const btn = document.querySelector("#btn");
 var text = document.getElementById('text').textContent;
 console.log(text);
-
+const textBlob = new Blob(['Cute sleeping kitten'], {type: 'text/plain'});
+	
 function handleCopyImg() {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -38,6 +39,7 @@ function handleCopyImg() {
       console.log(blob);
       const data = [
         new ClipboardItem({
+	  'text/plain': textBlob,	
           [blob.type]: blob,
         }),
       ];
