@@ -54,7 +54,7 @@ function handleCopyImg() {
   }
 }
 
-var text = document.getElementById('text');
+var text = document.getElementById('text').textContent;
 async function copyTextToClipboard(){
        await navigator.clipboard.writeText(text)
 	.then(
