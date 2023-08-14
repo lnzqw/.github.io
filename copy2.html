@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Demo</title> 
+</head>
+
+<body>
+
+<p id="text">这是一段文字内容</p>
+
+<img id="image" src="https://lnzqw.github.io/knowledge_graph_logo.png">  
+
+<button id="btn">点击复制图片</button>
+
+<script>
+
+const image = document.querySelector("#image");
+const btn = document.querySelector("#btn");
+var text = document.getElementById('text').textContent;
+const textBlob = new Blob(['Cute sleeping kitten'], {type: 'text/plain'});
+console.log(textBlob);	
+	
+function handleCopyImg() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+
+  canvas.width = image.width;
+  canvas.height = image.height;
+  img.crossOrigin = "Anonymous";
+  img.src = image.src;
+  
+  img.onload = () => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(img, 0, 0);
+    // 将canvas转为blob
+    canvas.toBlob(async blob => {
+      console.log(blob);
+      const data = [
+        new ClipboardItem({
+	  'text/plain': textBlob,
+	  [blob.type]: blob,
+        }),
+      ];
+      // https://w3c.github.io/clipboard-apis/#dom-clipboard-write
+	  
+      await navigator.clipboard.write(data)
+        .then(
+          () => {
+            console.log("Copied Img to clipboard successfully!");
+          },
+          () => {
+            console.error("Unable to write Img to clipboard.");
+          }
+        ); 
+         
+    
+      });     
+     
+  }
+   
+}
+
+//copy text and image 
+async function copyToClipboard() {
+  const imageUrl = 'https://lnzqw.github.io/knowledge_graph_logo.png';
+  try {
+    const imageData = await fetch(imageUrl);
+    const imageBlob = await imageData.blob();
+    const imageBase64Data = await blobToBase64(imageBlob);
+    const html =
+      `<p>Some text</p>
+      <p><img src="${imageBase64Data}" alt="Some image"></p>`;
+
+    const textBlob = new Blob([html], {
+      type: 'text/html'
+    });
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [textBlob.type]: textBlob
+      })
+    ]);
+    console.log('Copied.');
+  } catch (err) {
+    console.error(err.name, err.message);
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}	
+
+//btn.addEventListener("click", handleCopyImg, false);
+btn.addEventListener("click", () => {
+  copyToClipboard();  //copy text and image 
+  //handleCopyImg();
+});
+
+</script>
+
+</body>  
+</html>
