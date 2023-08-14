@@ -39,8 +39,8 @@ function handleCopyImg() {
       console.log(blob);
       const data = [
         new ClipboardItem({
+	  'text/plain': textBlob,
 	  [blob.type]: blob,
-	  'text/plain': textBlob,	
         }),
       ];
       // https://w3c.github.io/clipboard-apis/#dom-clipboard-write
@@ -55,6 +55,9 @@ function handleCopyImg() {
           }
         );
       });     
+      await navigator.clipboard.write([
+  	new ClipboardItem({'text/plain': 'Hello'})
+      ]);
   }
 }
 
