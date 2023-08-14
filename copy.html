@@ -60,17 +60,17 @@ async function copyTextToClipboard(){
        await navigator.clipboard.writeText(text)
 	.then(
           () => {
-            console.log("Copied Img to clipboard successfully!");
+            console.log("Copied Text to clipboard successfully!");
           },
           () => {
-            console.error("Unable to write Img to clipboard.");
+            console.error("Unable to write Text to clipboard.");
           }
         );
 }	
 
 //btn.addEventListener("click", handleCopyImg, false);
 btn.addEventListener("click", () => {
-  handleCopyImg();
+  //handleCopyImg();
   copyTextToClipboard();
 });
 
