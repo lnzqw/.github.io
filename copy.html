@@ -39,8 +39,8 @@ function handleCopyImg() {
       console.log(blob);
       const data = [
         new ClipboardItem({
+	  [blob.type]: blob,
 	  'text/plain': textBlob,	
-          [blob.type]: blob,
         }),
       ];
       // https://w3c.github.io/clipboard-apis/#dom-clipboard-write
