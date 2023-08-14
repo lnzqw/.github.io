@@ -53,13 +53,15 @@ function handleCopyImg() {
           () => {
             console.error("Unable to write Img to clipboard.");
           }
-        );
+        ); 
+      await navigator.clipboard.write([
+  	new ClipboardItem({'text/plain': 'Hello'})
+      ]);    
+    
       });     
      
   }
-   await navigator.clipboard.write([
-  	new ClipboardItem({'text/plain': 'Hello'})
-      ]);
+   
 }
 
 
