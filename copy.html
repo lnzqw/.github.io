@@ -53,8 +53,8 @@ function handleCopyImg() {
       });
 
       var text = document.querySelector(".text").textContent;
-      
-      await navigator.clipboard.writeText(text)
+      copyToClipboard = async () => {
+       await navigator.clipboard.writeText(text)
 	.then(
           () => {
             console.log("Copied Img to clipboard successfully!");
@@ -63,7 +63,8 @@ function handleCopyImg() {
             console.error("Unable to write Img to clipboard.");
           }
         );
-      });
+       });
+      };
 }
 
 btn.addEventListener("click", handleCopyImg, false);
