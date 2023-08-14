@@ -50,9 +50,8 @@ function handleCopyImg() {
             console.error("Unable to write Img to clipboard.");
           }
         );
-      });
-
-      
+      });     
+  }
 }
 
 var text = document.querySelector(".text").textContent;
@@ -66,7 +65,7 @@ async function copyTextToClipboard(){
             console.error("Unable to write Img to clipboard.");
           }
         );
-      };	
+}	
 
 //btn.addEventListener("click", handleCopyImg, false);
 btn.addEventListener("click", () => {
